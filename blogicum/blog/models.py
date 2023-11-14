@@ -2,11 +2,11 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 
-MAX_NAME_LENGTH = 25
+string_length_for_debug = 25
 User = get_user_model()
 
 
-class CommonFieldsModel(models.Model):
+class CreatedTimeIsPublishedModel(models.Model):
     is_published = models.BooleanField(
         default=True,
         verbose_name='Опубликовано',
@@ -19,11 +19,10 @@ class CommonFieldsModel(models.Model):
         abstract = True
 
     def __str__(self):
-        return (f'Статус публикации: {self.is_published}, '
-                f'Дата создания: {self.created_at}')
+        return (f'{self.is_published=}, {self.created_at=}')
 
 
-class Category(CommonFieldsModel):
+class Category(CreatedTimeIsPublishedModel):
     title = models.CharField(max_length=256, verbose_name='Заголовок')
     description = models.TextField(verbose_name='Описание')
     slug = models.SlugField(
@@ -39,12 +38,14 @@ class Category(CommonFieldsModel):
         verbose_name_plural = 'Категории'
 
     def __str__(self):
-        return (f'Заголовок: {self.title[:MAX_NAME_LENGTH]}, '
-                f'Описание: {self.description}, '
-                f'Слаг: {self.slug}')
+        return (f'{self.title[:string_length_for_debug]=}, '
+                f'{self.description=}, '
+                f'{self.slug=}, '
+                f'{super().is_published=}, '
+                f'{super().created_at=}')
 
 
-class Location(CommonFieldsModel):
+class Location(CreatedTimeIsPublishedModel):
     name = models.CharField(max_length=256, verbose_name='Название места')
 
     class Meta:
@@ -52,10 +53,12 @@ class Location(CommonFieldsModel):
         verbose_name_plural = 'Местоположения'
 
     def __str__(self):
-        return (f'Имя: {self.name[:MAX_NAME_LENGTH]}')
+        return (f'{self.name[:string_length_for_debug]=}, '
+                f'{super().is_published=}, '
+                f'{super().created_at=}')
 
 
-class Post(CommonFieldsModel):  # Публикация
+class Post(CreatedTimeIsPublishedModel):
     title = models.CharField(max_length=256, verbose_name='Заголовок')
     text = models.TextField(verbose_name='Текст')
     pub_date = models.DateTimeField(
@@ -66,32 +69,34 @@ class Post(CommonFieldsModel):  # Публикация
         User,
         on_delete=models.CASCADE,
         verbose_name='Автор публикации',
-        related_name='author_posts')
+        related_name='posts_one_author')
     location = models.ForeignKey(
         Location,
         null=True,
         on_delete=models.SET_NULL,
         blank=True,
         verbose_name='Местоположение',
-        related_name='post_location'
+        related_name='posts_location'
     )
     category = models.ForeignKey(
         Category,
         null=True,
         on_delete=models.SET_NULL,
         verbose_name='Категория',
-        related_name='post_in_category'
+        related_name='posts_in_category'
     )
 
     class Meta:
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
-        ordering = ['-pub_date']
+        ordering = ('-pub_date',)
 
     def __str__(self):
-        return (f'Заголовок: {self.title[:MAX_NAME_LENGTH]}, '
-                f'Текст: {self.text}, '
-                f'Дата публикации: {self.pub_date}, '
-                f'Автор: {self.author}, '
-                f'Место публикации: {self.location}, '
-                f'Категория публикации: {self.category}')
+        return (f'{self.title[:string_length_for_debug]=}, '
+                f'{self.text[:string_length_for_debug]=}, '
+                f'{self.pub_date=}, '
+                f'{self.author=}, '
+                f'{self.location=}, '
+                f'{self.category=}, '
+                f'{super().is_published=}, '
+                f'{super().created_at=}')
