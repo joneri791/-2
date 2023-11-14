@@ -17,11 +17,9 @@ def filter_posts(posts):
 
 
 def index(request):
-    return render(
-        request,
-        'blog/index.html',
-        {'post_list': filter_posts(Post.objects)[0:5], }
-    )
+    return render(request, 'blog/index.html', {
+        'post_list': filter_posts(Post.objects)[0:5],
+    })
 
 
 def post_detail(request, post_id):
@@ -37,6 +35,6 @@ def category_posts(request, category_slug):
         is_published=True,
         slug=category_slug,
     )
-    post_list = filter_posts(category.posts_in_category)
     return render(request, 'blog/category.html',
-                  {'post_list': post_list, 'category': category})
+                  {'post_list': filter_posts(category.posts),
+                   'category': category})

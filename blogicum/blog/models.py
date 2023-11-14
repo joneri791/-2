@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 
-string_length_for_debug = 25
+STRING_LENGTH = 25
 User = get_user_model()
 
 
@@ -38,11 +38,10 @@ class Category(CreatedTimeIsPublishedModel):
         verbose_name_plural = 'Категории'
 
     def __str__(self):
-        return (f'{self.title[:string_length_for_debug]=}, '
+        return (f'{self.title[:STRING_LENGTH]=}, '
                 f'{self.description=}, '
                 f'{self.slug=}, '
-                f'{super().is_published=}, '
-                f'{super().created_at=}')
+                f'{super().__str__()}')
 
 
 class Location(CreatedTimeIsPublishedModel):
@@ -53,9 +52,8 @@ class Location(CreatedTimeIsPublishedModel):
         verbose_name_plural = 'Местоположения'
 
     def __str__(self):
-        return (f'{self.name[:string_length_for_debug]=}, '
-                f'{super().is_published=}, '
-                f'{super().created_at=}')
+        return (f'{self.name[:STRING_LENGTH]=}, '
+                f'{super().__str__()}')
 
 
 class Post(CreatedTimeIsPublishedModel):
@@ -69,21 +67,21 @@ class Post(CreatedTimeIsPublishedModel):
         User,
         on_delete=models.CASCADE,
         verbose_name='Автор публикации',
-        related_name='posts_one_author')
+        related_name='posts')
     location = models.ForeignKey(
         Location,
         null=True,
         on_delete=models.SET_NULL,
         blank=True,
         verbose_name='Местоположение',
-        related_name='posts_location'
+        related_name='posts'
     )
     category = models.ForeignKey(
         Category,
         null=True,
         on_delete=models.SET_NULL,
         verbose_name='Категория',
-        related_name='posts_in_category'
+        related_name='posts'
     )
 
     class Meta:
@@ -92,11 +90,10 @@ class Post(CreatedTimeIsPublishedModel):
         ordering = ('-pub_date',)
 
     def __str__(self):
-        return (f'{self.title[:string_length_for_debug]=}, '
-                f'{self.text[:string_length_for_debug]=}, '
+        return (f'{self.title[:STRING_LENGTH]=}, '
+                f'{self.text[:STRING_LENGTH]=}, '
                 f'{self.pub_date=}, '
                 f'{self.author=}, '
                 f'{self.location=}, '
                 f'{self.category=}, '
-                f'{super().is_published=}, '
-                f'{super().created_at=}')
+                f'{super().__str__()}')
